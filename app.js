@@ -68,7 +68,7 @@ const database = {
 
     console.log('data: ', data);
 
-    return convertInstallation(data.installation);
+    return convertInstallation(data.settings);
   },
   async getTokenByEnterprise(enterpriseId, userId) {
     const { data, error } = await supabase
@@ -80,7 +80,7 @@ const database = {
 
     console.log('data: ', data);
 
-    return convertInstallation(data.installation);
+    return convertInstallation(data.settings);
   },
 
   async deleteTokenByTeam(teamId) {
@@ -108,9 +108,9 @@ const database = {
 async function getTenantUserId(userId) {
   try {
     const { data, error } = await supabase
-      .from('tenants_users_slack_account')
+      .from('tenants_users_accounts')
       .select('tenant_user_id')
-      .eq('user_id', userId)
+      .eq('settings->>user_id', userId)
       .single();
     if (!error) {
       return data.tenant_user_id;
@@ -149,7 +149,78 @@ const emptyTodos = (day) => {
   };
 };
 
-const receiver = new ExpressReceiver({
+// const receiver = new ExpressReceiver({
+//   socketMode: true,
+//   signingSecret: process.env.SLACK_SIGNING_SECRET,
+//   clientId: process.env.SLACK_CLIENT_ID,
+//   clientSecret: process.env.SLACK_CLIENT_SECRET,
+//   appToken: process.env.SLACK_APP_TOKEN,
+//   stateSecret: 'a-secret',
+//   scopes: [
+//     'channels:history',
+//     'chat:write',
+//     'commands',
+//     'groups:history',
+//     'im:history',
+//     'mpim:history',
+//     'app_mentions:read',
+//     'channels:join',
+//     'chat:write.customize',
+//     'users:read',
+//     'incoming-webhook',
+//   ],
+//   installationStore: {
+//     fetchInstallation: async (installQuery) => {
+//       console.log(installQuery, 'fetch installation');
+//       // Bolt will pass your handler an installQuery object
+//       // Change the lines below so they fetch from your database
+//       const userId = installQuery.userId;
+//       if (
+//         installQuery.isEnterpriseInstall &&
+//         installQuery.enterpriseId !== undefined
+//       ) {
+//         // handle org wide app installation lookup
+//         return await database.getTokenByEnterprise(
+//           installQuery.enterpriseId,
+//           userId,
+//         );
+//       }
+//       if (installQuery.teamId !== undefined) {
+//         // single team app installation lookup
+
+//         console.log(installQuery.teamId, 'team_id');
+//         return await database.getTokenByTeam(installQuery.teamId, userId);
+//       }
+//       throw new Error('Failed fetching installation');
+//     },
+//     deleteInstallation: async (installQuery) => {
+//       // Bolt will pass your handler  an installQuery object
+//       // Change the lines below so they delete from your database
+//       const userId = installQuery.userId;
+//       if (
+//         installQuery.isEnterpriseInstall &&
+//         installQuery.enterpriseId !== undefined
+//       ) {
+//         // org wide app installation deletion
+//         return await database.deleteTokenByTeam(
+//           installQuery.enterpriseId,
+//           userId,
+//         );
+//       }
+//       if (installQuery.teamId !== undefined) {
+//         // single team app installation deletion
+//         return await database.deleteTokenByEnterprise(
+//           installQuery.teamId,
+//           userId,
+//         );
+//       }
+//       throw new Error('Failed to delete installation');
+//     },
+//   },
+// });
+
+// Initializes your app with your bot token and app token
+const app = new App({
   socketMode: true,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   clientId: process.env.SLACK_CLIENT_ID,
@@ -217,12 +288,6 @@ const receiver = new ExpressReceiver({
       throw new Error('Failed to delete installation');
     },
   },
-});
-
-// Initializes your app with your bot token and app token
-const app = new App({
-  receiver,
-
   logLevel: LogLevel.DEBUG,
 });
 
@@ -318,9 +383,9 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
 
   const date = dayjs().startOf('day').toISOString();
   const nextDate = dayjs().endOf('day').toISOString();
-
+  console.log('error');
   const tenantUserId = await getTenantUserId(context.userId);
-
+  console.log(tenantUserId);
   if (!tenantUserId) {
     return;
   }
