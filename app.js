@@ -826,11 +826,9 @@ app.shortcut('convert_todo', async ({ shortcut, ack, context, respond }) => {
   } catch (error) {}
 });
 
-export default app;
+(async () => {
+  // Start your app
+  await app.start(process.env.PORT || 3000);
 
-// (async () => {
-//   // Start your app
-//   await app.start(process.env.PORT || 3000);
-
-//   console.log('⚡️ Bolt app is running!');
-// })();
+  console.log('⚡️ Bolt app is running!');
+})();
