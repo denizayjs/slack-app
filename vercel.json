@@ -1,5 +1,5 @@
 {
   "version": 2,
-  "starts": [{ "src": "./app.js", "use": "@vercel/node" }],
+  "start": [{ "src": "./app.js", "use": "@vercel/node" }],
   "routes": [{ "src": "/(.*)", "dest": "/" }]
 }
