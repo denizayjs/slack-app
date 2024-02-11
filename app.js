@@ -150,6 +150,7 @@ const emptyTodos = (day) => {
 };
 
 const expressReceiver = new ExpressReceiver({
+  socketMode: true,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
@@ -220,6 +221,7 @@ const expressReceiver = new ExpressReceiver({
 
 // Initializes your app with your bot token and app token
 const app = new App({
+  //   socketMode: true,
   //   signingSecret: process.env.SLACK_SIGNING_SECRET,
   //   clientId: process.env.SLACK_CLIENT_ID,
   //   clientSecret: process.env.SLACK_CLIENT_SECRET,
