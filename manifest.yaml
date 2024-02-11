@@ -1,5 +1,8 @@
 display_information:
-  name: TestApp
+  name: BeforeSunset AI
+  description: BeforeSunset AI-powered daily and weekly planner
+  background_color: '#3396A1'
+  long_description: BeforeSunset AI is an AI-powered daily and weekly planner that plans your day based on your schedule and to-do list through time blocking on your calendar. It has useful AI features like planning your day, making to-dos actionable, and creating subtasks, all done by AI. Some other useful features include analytics on planning and work-life balance, time tracking, focus mode, mood, and location tracking.
 features:
   bot_user:
     display_name: TestApp
@@ -30,11 +33,10 @@ features:
       should_escape: false
 oauth_config:
   redirect_urls:
-    - http://localhost:3001/en/slack-callback
+    - https://test.app.beforesunset.ai//en/slack-callback
   scopes:
     bot:
       - channels:read
-      - channels:manage
       - channels:history
       - chat:write
       - groups:history
@@ -44,11 +46,11 @@ oauth_config:
       - channels:join
       - chat:write.customize
       - users:read
+      - users:read.email
       - commands
 settings:
   event_subscriptions:
     bot_events:
-      - app_mention
       - message.channels
       - message.groups
       - message.im
