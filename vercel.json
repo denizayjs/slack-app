@@ -1,5 +1,7 @@
 {
   "version": 2,
-  "builds": [{ "src": "./app.js", "use": "@vercel/node" }],
-  "routes": [{ "src": "/(.*)", "dest": "/" }]
+  "name": "beforesunset-slack-api",
+  "outputDirectory": "",
+  "trailingSlash": false,
+  "rewrites": [{ "source": "/(.*)", "destination": "./" }]
 }
