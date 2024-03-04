@@ -230,6 +230,9 @@ const socketModeReceiver = new SocketModeReceiver({
       throw new Error('Failed to delete installation');
     },
   },
+  installerOptions: {
+    port: 3000,
+  },
 });
 
 // Initializes your app with your bot token and app token
@@ -842,7 +845,7 @@ app.shortcut('convert_todo', async ({ shortcut, ack, context, respond }) => {
 
 (async () => {
   // Start your app
-  await app.start(process.env.PORT || 3000);
+  await app.start();
 
   console.log('⚡️ Bolt app is running!');
 })();
