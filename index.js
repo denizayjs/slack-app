@@ -304,7 +304,6 @@ const app = new App({
   //     },
   //   },
   receiver: socketModeReceiver,
-  logLevel: LogLevel.DEBUG,
 });
 
 // Listen for a slash command invocation
@@ -376,8 +375,8 @@ app.command('/bs', async ({ ack, context, respond, command, logger }) => {
       });
     } else {
       await respond(`☀️ ☀️ ☀️ **BeforeSunset AI** is AI-powered daily and weekly planner that plans your day based on your schedule and to-do list by time-blocking on your calendar.   You can use it via Slack, the **[web interface]** https://app.beforesunset.ai/en/login .
-      Below are valid Slack commands for Happy Path:
-        /bs taks → Create to-do on the Later tab.
+      Below are valid Slack commands for BeforesunsetAI:
+        /bs task_title → Create to-do on the Later tab.
                 
         /bsyesterday → List your to-dos from the day before.
                 
@@ -414,6 +413,8 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
     .gte('planned_at::date', date)
     .lt('planned_at::date', nextDate)
     .order('id');
+
+  console.log(data);
 
   const todoList = data.map((item) => {
     return {
