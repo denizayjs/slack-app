@@ -1,4 +1,9 @@
-const { App, LogLevel, ExpressReceiver } = require('@slack/bolt');
+const {
+  App,
+  LogLevel,
+  ExpressReceiver,
+  SocketModeReceiver,
+} = require('@slack/bolt');
 const { createClient } = require('@supabase/supabase-js');
 const dayjs = require('dayjs');
 require('dotenv').config();
@@ -149,78 +154,7 @@ const emptyTodos = (day) => {
   };
 };
 
-// const expressReceiver = new ExpressReceiver({
-//   signingSecret: process.env.SLACK_SIGNING_SECRET,
-//   clientId: process.env.SLACK_CLIENT_ID,
-//   clientSecret: process.env.SLACK_CLIENT_SECRET,
-//   appToken: process.env.SLACK_APP_TOKEN,
-//   stateSecret: 'a-secret',
-//   scopes: [
-//     'channels:history',
-//     'chat:write',
-//     'commands',
-//     'groups:history',
-//     'im:history',
-//     'mpim:history',
-//     'app_mentions:read',
-//     'channels:join',
-//     'chat:write.customize',
-//     'users:read',
-//     'incoming-webhook',
-//   ],
-//   installationStore: {
-//     fetchInstallation: async (installQuery) => {
-//       console.log(installQuery, 'fetch installation');
-//       // Bolt will pass your handler an installQuery object
-//       // Change the lines below so they fetch from your database
-//       const userId = installQuery.userId;
-//       if (
-//         installQuery.isEnterpriseInstall &&
-//         installQuery.enterpriseId !== undefined
-//       ) {
-//         // handle org wide app installation lookup
-//         return await database.getTokenByEnterprise(
-//           installQuery.enterpriseId,
-//           userId,
-//         );
-//       }
-//       if (installQuery.teamId !== undefined) {
-//         // single team app installation lookup
-
-//         console.log(installQuery.teamId, 'team_id');
-//         return await database.getTokenByTeam(installQuery.teamId, userId);
-//       }
-//       throw new Error('Failed fetching installation');
-//     },
-//     deleteInstallation: async (installQuery) => {
-//       // Bolt will pass your handler  an installQuery object
-//       // Change the lines below so they delete from your database
-//       const userId = installQuery.userId;
-//       if (
-//         installQuery.isEnterpriseInstall &&
-//         installQuery.enterpriseId !== undefined
-//       ) {
-//         // org wide app installation deletion
-//         return await database.deleteTokenByTeam(
-//           installQuery.enterpriseId,
-//           userId,
-//         );
-//       }
-//       if (installQuery.teamId !== undefined) {
-//         // single team app installation deletion
-//         return await database.deleteTokenByEnterprise(
-//           installQuery.teamId,
-//           userId,
-//         );
-//       }
-//       throw new Error('Failed to delete installation');
-//     },
-//   },
-// });
-
-// Initializes your app with your bot token and app token
-const app = new App({
-  socketMode: false,
+const socketModeReceiver = new SocketModeReceiver({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
@@ -238,6 +172,15 @@ const app = new App({
     'chat:write.customize',
     'users:read',
     'incoming-webhook',
+  ],
+  customRoutes: [
+    {
+      method: 'GET',
+      handler: (_, res) => {
+        res.end('Bolt app is running!');
+      },
+      path: '/',
+    },
   ],
   installationStore: {
     fetchInstallation: async (installQuery) => {
@@ -287,7 +230,78 @@ const app = new App({
       throw new Error('Failed to delete installation');
     },
   },
-  //   receiver: expressReceiver,
+});
+
+// Initializes your app with your bot token and app token
+const app = new App({
+  //   socketMode: false,
+  //   signingSecret: process.env.SLACK_SIGNING_SECRET,
+  //   clientId: process.env.SLACK_CLIENT_ID,
+  //   clientSecret: process.env.SLACK_CLIENT_SECRET,
+  //   appToken: process.env.SLACK_APP_TOKEN,
+  //   stateSecret: 'a-secret',
+  //   scopes: [
+  //     'channels:history',
+  //     'chat:write',
+  //     'commands',
+  //     'groups:history',
+  //     'im:history',
+  //     'mpim:history',
+  //     'app_mentions:read',
+  //     'channels:join',
+  //     'chat:write.customize',
+  //     'users:read',
+  //     'incoming-webhook',
+  //   ],
+  //   installationStore: {
+  //     fetchInstallation: async (installQuery) => {
+  //       console.log(installQuery, 'fetch installation');
+  //       // Bolt will pass your handler an installQuery object
+  //       // Change the lines below so they fetch from your database
+  //       const userId = installQuery.userId;
+  //       if (
+  //         installQuery.isEnterpriseInstall &&
+  //         installQuery.enterpriseId !== undefined
+  //       ) {
+  //         // handle org wide app installation lookup
+  //         return await database.getTokenByEnterprise(
+  //           installQuery.enterpriseId,
+  //           userId,
+  //         );
+  //       }
+  //       if (installQuery.teamId !== undefined) {
+  //         // single team app installation lookup
+
+  //         console.log(installQuery.teamId, 'team_id');
+  //         return await database.getTokenByTeam(installQuery.teamId, userId);
+  //       }
+  //       throw new Error('Failed fetching installation');
+  //     },
+  //     deleteInstallation: async (installQuery) => {
+  //       // Bolt will pass your handler  an installQuery object
+  //       // Change the lines below so they delete from your database
+  //       const userId = installQuery.userId;
+  //       if (
+  //         installQuery.isEnterpriseInstall &&
+  //         installQuery.enterpriseId !== undefined
+  //       ) {
+  //         // org wide app installation deletion
+  //         return await database.deleteTokenByTeam(
+  //           installQuery.enterpriseId,
+  //           userId,
+  //         );
+  //       }
+  //       if (installQuery.teamId !== undefined) {
+  //         // single team app installation deletion
+  //         return await database.deleteTokenByEnterprise(
+  //           installQuery.teamId,
+  //           userId,
+  //         );
+  //       }
+  //       throw new Error('Failed to delete installation');
+  //     },
+  //   },
+  receiver: socketModeReceiver,
   logLevel: LogLevel.DEBUG,
 });
 
