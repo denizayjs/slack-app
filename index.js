@@ -304,6 +304,7 @@ const app = new App({
   //     },
   //   },
   receiver: socketModeReceiver,
+  logLevel: LogLevel.DEBUG,
 });
 
 // Listen for a slash command invocation
