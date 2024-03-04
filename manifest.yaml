@@ -5,13 +5,13 @@ display_information:
   long_description: BeforeSunset AI is an AI-powered daily and weekly planner that plans your day based on your schedule and to-do list through time blocking on your calendar. It has useful AI features like planning your day, making to-dos actionable, and creating subtasks, all done by AI. Some other useful features include analytics on planning and work-life balance, time tracking, focus mode, mood, and location tracking.
 features:
   bot_user:
-    display_name: TestApp
+    display_name: BeforesunsetAI
     always_online: false
   shortcuts:
     - name: Convert Todo
       type: message
       callback_id: convert_todo
-      description: 'Convert message to todo '
+      description: Convert message to todo
   slash_commands:
     - command: /bs
       description: Create new todo
@@ -33,7 +33,7 @@ features:
       should_escape: false
 oauth_config:
   redirect_urls:
-    - https://test.app.beforesunset.ai//en/slack-callback
+    - https://test.app.beforesunset.ai/en/slack-callback
   scopes:
     bot:
       - channels:read
@@ -43,7 +43,6 @@ oauth_config:
       - im:history
       - mpim:history
       - app_mentions:read
-      - channels:join
       - chat:write.customize
       - users:read
       - users:read.email
@@ -51,12 +50,10 @@ oauth_config:
 settings:
   event_subscriptions:
     bot_events:
-      - message.channels
-      - message.groups
       - message.im
-      - message.mpim
   interactivity:
     is_enabled: true
+    request_url: https://slack-app-nine.vercel.app/slack/
   org_deploy_enabled: false
-  socket_mode_enabled: true
+  socket_mode_enabled: false
   token_rotation_enabled: false
