@@ -155,6 +155,7 @@ const emptyTodos = (day) => {
 };
 
 const socketModeReceiver = new SocketModeReceiver({
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
   appToken: process.env.SLACK_APP_TOKEN,
@@ -409,10 +410,10 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
   const { data, error } = await supabase
     .from('vw_tasks')
     .select('id, task_title, completed_at')
-    .eq('tenant_user_id', tenantUserId)
-    .eq('is_displayed_in_list', true)
     .gte('planned_at::date', date)
     .lt('planned_at::date', nextDate)
+    .eq('tenant_user_id', tenantUserId)
+    .eq('is_displayed_in_list', true)
     .order('id');
 
   console.log(data);
