@@ -155,7 +155,6 @@ const emptyTodos = (day) => {
 };
 
 const socketModeReceiver = new SocketModeReceiver({
-  signingSecret: process.env.SLACK_SIGNING_SECRET,
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
   appToken: process.env.SLACK_APP_TOKEN,
