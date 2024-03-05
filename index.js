@@ -668,7 +668,10 @@ app.command('/bslater', async ({ ack, context, respond, logger }) => {
   const tenantUserId = await getTenantUserId(context.userId);
   const timezone = await getTenantUserTimezone(tenantUserId);
 
-  console.log('date', dayjs().tz(timezone).endOf('isoWeek').toISOString());
+  console.log(
+    'date',
+    dayjs().tz(timezone).endOf('day').endOf('isoWeek').toISOString(),
+  );
   if (!tenantUserId) {
     return;
   }
@@ -681,6 +684,7 @@ app.command('/bslater', async ({ ack, context, respond, logger }) => {
     .or(
       `and(planned_at_attribute.eq.LATER, planned_at.is.NULL), planned_at.gte.${dayjs()
         .tz(timezone)
+        .endOf('day')
         .endOf('isoWeek')
         .toISOString()}`,
     )
