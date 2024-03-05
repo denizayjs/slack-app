@@ -400,6 +400,9 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
   const date = dayjs().startOf('day').toISOString();
   const nextDate = dayjs().endOf('day').toISOString();
 
+  console.log(date);
+  console.log(nextDate);
+
   const tenantUserId = await getTenantUserId(context.userId);
   console.log(tenantUserId);
   if (!tenantUserId) {
