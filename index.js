@@ -399,7 +399,7 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
 
   const date = dayjs().startOf('day').toISOString();
   const nextDate = dayjs().endOf('day').toISOString();
-  console.log('error');
+
   const tenantUserId = await getTenantUserId(context.userId);
   console.log(tenantUserId);
   if (!tenantUserId) {
@@ -415,7 +415,7 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
     .eq('is_displayed_in_list', true)
     .order('id');
 
-  console.log('tasks', data);
+  console.log('error', error);
 
   const todoList = data.map((item) => {
     return {
