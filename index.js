@@ -225,14 +225,11 @@ const socketModeReceiver = new SocketModeReceiver({
       throw new Error('Failed to delete installation');
     },
   },
-  installerOptions: {
-    port: 3000,
-  },
 });
 
 // Initializes your app with your bot token and app token
 const app = new App({
-  //   socketMode: false,
+  //   socketMode: true,
   //   signingSecret: process.env.SLACK_SIGNING_SECRET,
   //   clientId: process.env.SLACK_CLIENT_ID,
   //   clientSecret: process.env.SLACK_CLIENT_SECRET,
@@ -302,6 +299,13 @@ const app = new App({
   receiver: socketModeReceiver,
   logLevel: LogLevel.DEBUG,
 });
+
+(async () => {
+  // Start your app
+  await app.start(3000);
+
+  console.log('⚡️ Bolt app is running!');
+})();
 
 // Listen for a slash command invocation
 
@@ -839,10 +843,3 @@ app.shortcut('convert_todo', async ({ shortcut, ack, context, respond }) => {
     });
   } catch (error) {}
 });
-
-(async () => {
-  // Start your app
-  await app.start();
-
-  console.log('⚡️ Bolt app is running!');
-})();
