@@ -1,9 +1,4 @@
-const {
-  App,
-  LogLevel,
-  ExpressReceiver,
-  SocketModeReceiver,
-} = require('@slack/bolt');
+const { App, LogLevel, SocketModeReceiver } = require('@slack/bolt');
 const { createClient } = require('@supabase/supabase-js');
 const dayjs = require('dayjs');
 require('dotenv').config();
