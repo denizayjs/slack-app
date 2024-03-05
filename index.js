@@ -74,8 +74,6 @@ const database = {
       .eq('settings->>team_id', teamId)
       .single();
 
-    console.log('data: ', data);
-
     return convertInstallation(data.settings);
   },
   async getTokenByEnterprise(enterpriseId, userId) {
@@ -85,8 +83,6 @@ const database = {
       .eq('settings->>user_id', userId)
       .eq('settings->>enterprise_id', enterpriseId)
       .single();
-
-    console.log('data: ', data);
 
     return convertInstallation(data.settings);
   },
@@ -106,8 +102,6 @@ const database = {
       .delete()
       .eq('settings->>user_id', userId)
       .eq('settings->>enterprise_id', enterpriseId);
-
-    console.log('data: ', data);
 
     return null;
   },
@@ -155,7 +149,7 @@ async function getTenantUserAutoMoving(tenantUserId) {
       .select('settings')
       .eq('id', tenantUserId)
       .single();
-    console.log(data);
+
     if (!error) {
       return data.settings.autoMoving;
     }
@@ -194,10 +188,10 @@ const emptyTodos = (day) => {
 };
 
 const socketModeReceiver = new SocketModeReceiver({
+  appToken: process.env.SLACK_APP_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
-  appToken: process.env.SLACK_APP_TOKEN,
   stateSecret: 'a-secret',
   scopes: [
     'channels:history',
@@ -223,7 +217,6 @@ const socketModeReceiver = new SocketModeReceiver({
   ],
   installationStore: {
     fetchInstallation: async (installQuery) => {
-      console.log(installQuery, 'fetch installation');
       // Bolt will pass your handler an installQuery object
       // Change the lines below so they fetch from your database
       const userId = installQuery.userId;
@@ -240,7 +233,6 @@ const socketModeReceiver = new SocketModeReceiver({
       if (installQuery.teamId !== undefined) {
         // single team app installation lookup
 
-        console.log(installQuery.teamId, 'team_id');
         return await database.getTokenByTeam(installQuery.teamId, userId);
       }
       throw new Error('Failed fetching installation');
@@ -273,75 +265,73 @@ const socketModeReceiver = new SocketModeReceiver({
 
 // Initializes your app with your bot token and app token
 const app = new App({
-  socketMode: true,
-  appToken: process.env.SLACK_APP_TOKEN,
-  signingSecret: process.env.SLACK_SIGNING_SECRET,
-  clientId: process.env.SLACK_CLIENT_ID,
-  clientSecret: process.env.SLACK_CLIENT_SECRET,
+  //   socketMode: true,
+  //   appToken: process.env.SLACK_APP_TOKEN,
+  //   signingSecret: process.env.SLACK_SIGNING_SECRET,
+  //   clientId: process.env.SLACK_CLIENT_ID,
+  //   clientSecret: process.env.SLACK_CLIENT_SECRET,
 
-  stateSecret: 'a-secret',
-  scopes: [
-    'channels:history',
-    'chat:write',
-    'commands',
-    'groups:history',
-    'im:history',
-    'mpim:history',
-    'app_mentions:read',
-    'channels:join',
-    'chat:write.customize',
-    'users:read',
-    'incoming-webhook',
-  ],
-  installationStore: {
-    fetchInstallation: async (installQuery) => {
-      console.log(installQuery, 'fetch installation');
-      // Bolt will pass your handler an installQuery object
-      // Change the lines below so they fetch from your database
-      const userId = installQuery.userId;
-      if (
-        installQuery.isEnterpriseInstall &&
-        installQuery.enterpriseId !== undefined
-      ) {
-        // handle org wide app installation lookup
-        return await database.getTokenByEnterprise(
-          installQuery.enterpriseId,
-          userId,
-        );
-      }
-      if (installQuery.teamId !== undefined) {
-        // single team app installation lookup
+  //   stateSecret: 'a-secret',
+  //   scopes: [
+  //     'channels:history',
+  //     'chat:write',
+  //     'commands',
+  //     'groups:history',
+  //     'im:history',
+  //     'mpim:history',
+  //     'app_mentions:read',
+  //     'channels:join',
+  //     'chat:write.customize',
+  //     'users:read',
+  //     'incoming-webhook',
+  //   ],
+  //   installationStore: {
+  //     fetchInstallation: async (installQuery) => {
+  //       // Bolt will pass your handler an installQuery object
+  //       // Change the lines below so they fetch from your database
+  //       const userId = installQuery.userId;
+  //       if (
+  //         installQuery.isEnterpriseInstall &&
+  //         installQuery.enterpriseId !== undefined
+  //       ) {
+  //         // handle org wide app installation lookup
+  //         return await database.getTokenByEnterprise(
+  //           installQuery.enterpriseId,
+  //           userId,
+  //         );
+  //       }
+  //       if (installQuery.teamId !== undefined) {
+  //         // single team app installation lookup
 
-        console.log(installQuery.teamId, 'team_id');
-        return await database.getTokenByTeam(installQuery.teamId, userId);
-      }
-      throw new Error('Failed fetching installation');
-    },
-    deleteInstallation: async (installQuery) => {
-      // Bolt will pass your handler  an installQuery object
-      // Change the lines below so they delete from your database
-      const userId = installQuery.userId;
-      if (
-        installQuery.isEnterpriseInstall &&
-        installQuery.enterpriseId !== undefined
-      ) {
-        // org wide app installation deletion
-        return await database.deleteTokenByTeam(
-          installQuery.enterpriseId,
-          userId,
-        );
-      }
-      if (installQuery.teamId !== undefined) {
-        // single team app installation deletion
-        return await database.deleteTokenByEnterprise(
-          installQuery.teamId,
-          userId,
-        );
-      }
-      throw new Error('Failed to delete installation');
-    },
-  },
-  //receiver: socketModeReceiver,
+  //         return await database.getTokenByTeam(installQuery.teamId, userId);
+  //       }
+  //       throw new Error('Failed fetching installation');
+  //     },
+  //     deleteInstallation: async (installQuery) => {
+  //       // Bolt will pass your handler  an installQuery object
+  //       // Change the lines below so they delete from your database
+  //       const userId = installQuery.userId;
+  //       if (
+  //         installQuery.isEnterpriseInstall &&
+  //         installQuery.enterpriseId !== undefined
+  //       ) {
+  //         // org wide app installation deletion
+  //         return await database.deleteTokenByTeam(
+  //           installQuery.enterpriseId,
+  //           userId,
+  //         );
+  //       }
+  //       if (installQuery.teamId !== undefined) {
+  //         // single team app installation deletion
+  //         return await database.deleteTokenByEnterprise(
+  //           installQuery.teamId,
+  //           userId,
+  //         );
+  //       }
+  //       throw new Error('Failed to delete installation');
+  //     },
+  //   },
+  receiver: socketModeReceiver,
   logLevel: LogLevel.DEBUG,
 });
 
@@ -368,8 +358,6 @@ app.command('/bs', async ({ ack, context, respond, command, logger }) => {
     planned_at_attribute: 'LATER',
     task_order: 0,
   };
-
-  console.log('new task', newTask);
 
   const { data, error } = await supabase
     .from('tasks')
@@ -446,7 +434,6 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
 
   const timezone = await getTenantUserTimezone(tenantUserId);
   const autoMoving = await getTenantUserAutoMoving(tenantUserId);
-  console.log(autoMoving);
 
   const date = dayjs().tz(timezone).startOf('day').toISOString();
   const nextDate = dayjs().tz(timezone).endOf('day').toISOString();
@@ -473,8 +460,6 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
       : await query
           .gte('planned_at::date', date)
           .lt('planned_at::date', nextDate);
-
-  console.log(data);
 
   const todoList = data.map((item) => {
     return {
@@ -534,16 +519,13 @@ app.command('/bstomorrow', async ({ ack, context, respond, logger }) => {
 
   const tenantUserId = await getTenantUserId(context.userId);
   const timezone = await getTenantUserTimezone(tenantUserId);
-  console.log(timezone);
+
   const date = dayjs().tz(timezone).add(1, 'day').startOf('day').toISOString();
   const nextDate = dayjs()
     .tz(timezone)
     .add(1, 'day')
     .endOf('day')
     .toISOString();
-
-  console.log('tomorrow start: ', date);
-  console.log('tomorrow end: ', nextDate);
 
   if (!tenantUserId) {
     return;
@@ -627,8 +609,6 @@ app.command('/bsyesterday', async ({ ack, context, respond, logger }) => {
     .subtract(1, 'day')
     .endOf('day')
     .toISOString();
-  console.log('date : ', date);
-  console.log('nextDate : ', nextDate);
 
   if (!tenantUserId) {
     return;
@@ -703,10 +683,6 @@ app.command('/bslater', async ({ ack, context, respond, logger }) => {
   const tenantUserId = await getTenantUserId(context.userId);
   const timezone = await getTenantUserTimezone(tenantUserId);
 
-  console.log(
-    'date',
-    dayjs().tz(timezone).endOf('day').endOf('isoWeek').toISOString(),
-  );
   if (!tenantUserId) {
     return;
   }
@@ -785,10 +761,6 @@ app.command('/bsrest', async ({ ack, context, respond, logger }) => {
   const tenantUserId = await getTenantUserId(context.userId);
   const timezone = await getTenantUserTimezone(tenantUserId);
 
-  console.log(
-    'date',
-    dayjs().tz(timezone).endOf('day').add(1, 'day').toISOString(),
-  );
   if (!tenantUserId) {
     return;
   }
@@ -879,8 +851,6 @@ app.shortcut('convert_todo', async ({ shortcut, ack, context, respond }) => {
     planned_at_attribute: 'LATER',
     task_order: 0,
   };
-
-  console.log('new task', newTask);
 
   const { data, error } = await supabase
     .from('tasks')
