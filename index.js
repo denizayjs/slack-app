@@ -499,7 +499,7 @@ app.command('/bstomorrow', async ({ ack, context, respond, logger }) => {
 
   const tenantUserId = await getTenantUserId(context.userId);
   const timezone = await getTenantUserTimezone(tenantUserId);
-
+  console.log(timezone);
   const date = dayjs().tz(timezone).add(1, 'day').startOf('day').toISOString();
   const nextDate = dayjs()
     .tz(timezone)
