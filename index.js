@@ -132,6 +132,9 @@ async function getTenantUserTimezone(tenantUserId) {
       .select('timezone')
       .eq('id', tenantUserId)
       .single();
+
+    console.log('error timezone', error);
+    console.log('data timezone', data);
     if (!error) {
       return data.timezone;
     }
