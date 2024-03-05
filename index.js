@@ -274,10 +274,11 @@ const socketModeReceiver = new SocketModeReceiver({
 // Initializes your app with your bot token and app token
 const app = new App({
   socketMode: true,
+  appToken: process.env.SLACK_APP_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
-  appToken: process.env.SLACK_APP_TOKEN,
+
   stateSecret: 'a-secret',
   scopes: [
     'channels:history',
@@ -346,7 +347,7 @@ const app = new App({
 
 (async () => {
   // Start your app
-  await app.start(3000);
+  await app.start(process.env.SLACK_APP_PORT);
 
   console.log('⚡️ Bolt app is running!');
 })();
