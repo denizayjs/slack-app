@@ -425,8 +425,8 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
   console.log(tenantUserId);
   const timezone = await getTenantUserTimezone(tenantUserId);
   console.log(timezone);
-  const date = dayjs.tz(timezone).startOf('day').toISOString();
-  const nextDate = dayjs.tz(timezone).endOf('day').toISOString();
+  const date = dayjs().tz(timezone).startOf('day').toISOString();
+  const nextDate = dayjs().tz(timezone).endOf('day').toISOString();
 
   console.log(date);
   console.log(nextDate);
@@ -440,9 +440,9 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
     .select('id, task_title, completed_at')
     .eq('tenant_user_id', tenantUserId)
     .gte('planned_at::date', date)
-    .lt('planned_at::date', nextDate);
-  // .eq('is_displayed_in_list', true)
-  // .order('id');
+    .lt('planned_at::date', nextDate)
+    .eq('is_displayed_in_list', true)
+    .order('id');
 
   console.log('data', data);
 
