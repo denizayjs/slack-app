@@ -2,10 +2,12 @@ const { App, LogLevel, SocketModeReceiver } = require('@slack/bolt');
 const { createClient } = require('@supabase/supabase-js');
 const dayjs = require('dayjs');
 const timezone = require('dayjs/plugin/timezone');
+const isoWeek = require('dayjs/plugin/isoWeek');
 const utc = require('dayjs/plugin/utc');
 
 dayjs.extend(timezone);
 dayjs.extend(utc);
+dayjs.extend(isoWeek);
 
 require('dotenv').config();
 /* 
