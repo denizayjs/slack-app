@@ -1,8 +1,11 @@
 const { App, LogLevel, SocketModeReceiver } = require('@slack/bolt');
 const { createClient } = require('@supabase/supabase-js');
-const timezone = require('dayjs/plugin/timezone');
 const dayjs = require('dayjs');
+const timezone = require('dayjs/plugin/timezone');
+const utc = require('dayjs/plugin/utc');
+
 dayjs.extend(timezone);
+dayjs.extend(utc);
 
 require('dotenv').config();
 /* 
@@ -422,8 +425,8 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
   console.log(tenantUserId);
   const timezone = await getTenantUserTimezone(tenantUserId);
   console.log(timezone);
-  const date = dayjs().tz(timezone).startOf('day').toISOString();
-  const nextDate = dayjs().tz(timezone).endOf('day').toISOString();
+  const date = dayjs.tz(timezone).startOf('day').toISOString();
+  const nextDate = dayjs.tz(timezone).endOf('day').toISOString();
 
   console.log(date);
   console.log(nextDate);
