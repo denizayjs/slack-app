@@ -422,14 +422,11 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
   // Acknowledge the command request
 
   const tenantUserId = await getTenantUserId(context.userId);
-  console.log(tenantUserId);
+
   const timezone = await getTenantUserTimezone(tenantUserId);
-  console.log(timezone);
+
   const date = dayjs().tz(timezone).startOf('day').toISOString();
   const nextDate = dayjs().tz(timezone).endOf('day').toISOString();
-
-  console.log(date);
-  console.log(nextDate);
 
   if (!tenantUserId) {
     return;
@@ -443,8 +440,6 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
     .lt('planned_at::date', nextDate)
     .eq('is_displayed_in_list', true)
     .order('id');
-
-  console.log('data', data);
 
   const todoList = data.map((item) => {
     return {
@@ -502,12 +497,18 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
 app.command('/bstomorrow', async ({ ack, context, respond, logger }) => {
   // Acknowledge the command request
 
-  const date = dayjs().add(1, 'day').startOf('day').toISOString();
-  const nextDate = dayjs().add(1, 'day').endOf('day').toISOString();
+  const tenantUserId = await getTenantUserId(context.userId);
+  const timezone = await getTenantUserTimezone(tenantUserId);
+
+  const date = dayjs().tz(timezone).add(1, 'day').startOf('day').toISOString();
+  const nextDate = dayjs()
+    .tz(timezone)
+    .add(1, 'day')
+    .endOf('day')
+    .toISOString();
 
   console.log('tomorrow start: ', date);
   console.log('tomorrow end: ', nextDate);
-  const tenantUserId = await getTenantUserId(context.userId);
 
   if (!tenantUserId) {
     return;
@@ -578,11 +579,21 @@ app.command('/bstomorrow', async ({ ack, context, respond, logger }) => {
 app.command('/bsyesterday', async ({ ack, context, respond, logger }) => {
   // Acknowledge the command request
 
-  const date = dayjs().subtract(1, 'day').startOf('day').toISOString();
-  const nextDate = dayjs().subtract(1, 'day').endOf('day').toISOString();
+  const tenantUserId = await getTenantUserId(context.userId);
+  const timezone = await getTenantUserTimezone(tenantUserId);
+
+  const date = dayjs()
+    .tz(timezone)
+    .subtract(1, 'day')
+    .startOf('day')
+    .toISOString();
+  const nextDate = dayjs()
+    .tz(timezone)
+    .subtract(1, 'day')
+    .endOf('day')
+    .toISOString();
   console.log('date : ', date);
   console.log('nextDate : ', nextDate);
-  const tenantUserId = await getTenantUserId(context.userId);
 
   if (!tenantUserId) {
     return;
@@ -655,6 +666,7 @@ app.command('/bslater', async ({ ack, context, respond, logger }) => {
   // Acknowledge the command request
 
   const tenantUserId = await getTenantUserId(context.userId);
+  const timezone = await getTenantUserTimezone(tenantUserId);
 
   if (!tenantUserId) {
     return;
@@ -667,6 +679,7 @@ app.command('/bslater', async ({ ack, context, respond, logger }) => {
     .eq('is_displayed_in_list', true)
     .or(
       `and(planned_at_attribute.eq.LATER, planned_at.is.NULL), planned_at.gte.${dayjs()
+        .tz(timezone)
         .endOf('day')
         .endOf('isoWeek')
         .toISOString()}`,
@@ -731,6 +744,7 @@ app.command('/bsrest', async ({ ack, context, respond, logger }) => {
   // Acknowledge the command request
 
   const tenantUserId = await getTenantUserId(context.userId);
+  const timezone = await getTenantUserTimezone(tenantUserId);
 
   if (!tenantUserId) {
     return;
@@ -743,9 +757,11 @@ app.command('/bsrest', async ({ ack, context, respond, logger }) => {
     .eq('is_displayed_in_list', true)
     .or(
       `and(planned_at_attribute.eq.REST_OF_THE_WEEK,planned_at.is.NULL), and( planned_at.gte.${dayjs()
+        .tz(timezone)
         .endOf('day')
         .add(1, 'day')
         .toISOString()},planned_at.lt.${dayjs()
+        .tz(timezone)
         .endOf('day')
         .endOf('isoWeek')
         .toISOString()})`,
