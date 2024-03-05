@@ -148,6 +148,24 @@ async function getTenantUserTimezone(tenantUserId) {
   }
 }
 
+async function getTenantUserAutoMoving(tenantUserId) {
+  try {
+    const { data, error } = await supabase
+      .from('tenants_users')
+      .select('settings')
+      .eq('id', tenantUserId)
+      .single();
+    console.log(data);
+    if (!error) {
+      return data.settings.autoMoving;
+    }
+  } catch (error) {
+    // Handle any unexpected errors
+    console.error(error);
+    throw new Error('An unexpected error occurred');
+  }
+}
+
 const emptyTodos = (day) => {
   return {
     response_type: 'ephemeral',
@@ -426,6 +444,8 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
   const tenantUserId = await getTenantUserId(context.userId);
 
   const timezone = await getTenantUserTimezone(tenantUserId);
+  const autoMoving = await getTenantUserAutoMoving(tenantUserId);
+  console.log(autoMoving);
 
   const date = dayjs().tz(timezone).startOf('day').toISOString();
   const nextDate = dayjs().tz(timezone).endOf('day').toISOString();
@@ -434,14 +454,24 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
     return;
   }
 
-  const { data, error } = await supabase
+  const query = await supabase
     .from('vw_tasks')
     .select('id, task_title, completed_at')
     .eq('tenant_user_id', tenantUserId)
-    .gte('planned_at::date', date)
-    .lt('planned_at::date', nextDate)
     .eq('is_displayed_in_list', true)
     .order('id');
+
+  const { data, error } =
+    autoMoving === 'ON'
+      ? query.or(
+          `and(planned_at.gte.${date},planned_at.lt.${nextDate}), and(planned_at.gte.${dayjs()
+            .tz(timezone)
+            .subtract(1, 'month')
+            .toISOString()},planned_at.lt.${date},completed_at.is.NULL)`,
+        )
+      : query.gte('planned_at::date', date).lt('planned_at::date', nextDate);
+
+  console.log(data);
 
   const todoList = data.map((item) => {
     return {
