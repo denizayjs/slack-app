@@ -1,6 +1,9 @@
 const { App, LogLevel, SocketModeReceiver } = require('@slack/bolt');
 const { createClient } = require('@supabase/supabase-js');
+const timezone = require('dayjs/plugin/timezone');
 const dayjs = require('dayjs');
+dayjs.extend(timezone);
+
 require('dotenv').config();
 /* 
 This sample slack application uses SocketMode
@@ -114,6 +117,23 @@ async function getTenantUserId(userId) {
       .single();
     if (!error) {
       return data.tenant_user_id;
+    }
+  } catch (error) {
+    // Handle any unexpected errors
+    console.error(error);
+    throw new Error('An unexpected error occurred');
+  }
+}
+
+async function getTenantUserTimezone(tenantUserId) {
+  try {
+    const { data, error } = await supabase
+      .from('tenants_users')
+      .select('timezone')
+      .eq('id', tenantUserId)
+      .single();
+    if (!error) {
+      return data.timezone;
     }
   } catch (error) {
     // Handle any unexpected errors
@@ -397,14 +417,16 @@ app.command('/bs', async ({ ack, context, respond, command, logger }) => {
 app.command('/bstoday', async ({ ack, context, respond, logger }) => {
   // Acknowledge the command request
 
-  const date = dayjs().startOf('day').toISOString();
-  const nextDate = dayjs().endOf('day').toISOString();
+  const tenantUserId = await getTenantUserId(context.userId);
+  console.log(tenantUserId);
+  const timezone = await getTenantUserTimezone(tenantUserId);
+
+  const date = dayjs().tz(timezone).startOf('day').toISOString();
+  const nextDate = dayjs().tz(timezone).endOf('day').toISOString();
 
   console.log(date);
   console.log(nextDate);
 
-  const tenantUserId = await getTenantUserId(context.userId);
-  console.log(tenantUserId);
   if (!tenantUserId) {
     return;
   }
