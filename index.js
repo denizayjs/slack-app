@@ -454,7 +454,7 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
     return;
   }
 
-  const query = await supabase
+  const query = supabase
     .from('vw_tasks')
     .select('id, task_title, completed_at')
     .eq('tenant_user_id', tenantUserId)
@@ -463,13 +463,15 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
 
   const { data, error } =
     autoMoving === 'ON'
-      ? query.or(
+      ? await query.or(
           `and(planned_at.gte.${date},planned_at.lt.${nextDate}), and(planned_at.gte.${dayjs()
             .tz(timezone)
             .subtract(1, 'month')
             .toISOString()},planned_at.lt.${date},completed_at.is.NULL)`,
         )
-      : query.gte('planned_at::date', date).lt('planned_at::date', nextDate);
+      : await query
+          .gte('planned_at::date', date)
+          .lt('planned_at::date', nextDate);
 
   console.log(data);
 
