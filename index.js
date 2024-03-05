@@ -133,8 +133,6 @@ async function getTenantUserTimezone(tenantUserId) {
       .eq('id', tenantUserId)
       .single();
 
-    console.log('error timezone', error);
-    console.log('data timezone', data);
     if (!error) {
       return data.timezone;
     }
@@ -423,7 +421,7 @@ app.command('/bstoday', async ({ ack, context, respond, logger }) => {
   const tenantUserId = await getTenantUserId(context.userId);
   console.log(tenantUserId);
   const timezone = await getTenantUserTimezone(tenantUserId);
-
+  console.log(timezone);
   const date = dayjs().tz(timezone).startOf('day').toISOString();
   const nextDate = dayjs().tz(timezone).endOf('day').toISOString();
 
